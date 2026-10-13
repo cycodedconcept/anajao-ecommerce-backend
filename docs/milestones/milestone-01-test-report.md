@@ -54,3 +54,7 @@ No destructive database reset was executed. No Truehost deployment or provider T
 ## Clean installation
 
 `npm ci` completed successfully: added 391 packages, audited 392 packages. `npm audit --audit-level=moderate` then exited 0 with `found 0 vulnerabilities`. The lockfile is reproducible locally.
+
+## Publication
+
+Implementation `0aa04b6` is pushed on `feature/milestone-01-backend-foundation`. [PR #1](https://github.com/cycodedconcept/anajao-ecommerce-backend/pull/1) targets develop. Consult the PR checks for the latest remote CI result; all local results above were executed successfully.

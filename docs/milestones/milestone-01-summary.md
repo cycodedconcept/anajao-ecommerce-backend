@@ -42,3 +42,7 @@ Prisma's dependency ranges initially pulled vulnerable dependencies. Explicit ov
 ## Git handoff
 
 Baseline commit: `b837690` on main and develop. Implementation branch: `feature/milestone-01-backend-foundation`, based on develop. See `docs/milestones/milestone-01-pr.md` for review content. Publication URL and remote CI result will be appended after verification.
+
+## Published review artifact
+
+Implementation commit: `0aa04b6`. Main, develop and feature branches pushed successfully. [PR #1](https://github.com/cycodedconcept/anajao-ecommerce-backend/pull/1) is open against develop and remains unmerged. Required local acceptance checks are complete. Remote CI status is visible on the PR; this report does not claim a remote pass before it is observed.
