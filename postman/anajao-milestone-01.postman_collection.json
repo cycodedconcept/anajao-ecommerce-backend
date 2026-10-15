@@ -1,0 +1,108 @@
+{
+  "info": {
+    "name": "KAM VOGUE \u2014 Milestone 01",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:3000"
+    },
+    {
+      "key": "expectedReadyStatus",
+      "value": "200"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "health"]
+        },
+        "description": "Application liveness; independent of database availability."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Expected HTTP status\", function () { pm.expect(pm.response.code).to.eql(200); });",
+              "pm.test(\"JSON response contract\", function () { const b=pm.response.json(); pm.expect(b.success).to.eql(pm.response.code===200); if(b.success) { pm.expect(b.data.status).to.eql(\"ok\"); } else { pm.expect(b.error.code).to.eql(\"NOT_READY\"); } });"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "Success",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": true,\n  \"data\": {\n    \"status\": \"ok\"\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Readiness",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/ready",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "ready"]
+        },
+        "description": "Set expectedReadyStatus=503 to assert unavailable readiness when database is stopped."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Expected HTTP status\", function () { pm.expect(pm.response.code).to.eql(Number(pm.variables.get(\"expectedReadyStatus\"))); });",
+              "pm.test(\"JSON response contract\", function () { const b=pm.response.json(); pm.expect(b.success).to.eql(pm.response.code===200); if(b.success) { pm.expect(b.data.status).to.eql(\"ready\"); } else { pm.expect(b.error.code).to.eql(\"NOT_READY\"); } });"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "Success",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": true,\n  \"data\": {\n    \"status\": \"ready\"\n  }\n}"
+        },
+        {
+          "name": "Unavailable",
+          "status": "Service Unavailable",
+          "code": 503,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"NOT_READY\",\n    \"message\": \"Service temporarily unavailable\"\n  }\n}"
+        }
+      ]
+    }
+  ]
+}
