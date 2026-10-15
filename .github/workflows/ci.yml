@@ -1,0 +1,48 @@
+name: Backend CI
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [main, develop]
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: ci-root-only
+          MARIADB_DATABASE: anajao_ecommerce_test
+          MARIADB_USER: anajao_test
+          MARIADB_PASSWORD: ci-test-only
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s --health-timeout=5s --health-retries=10
+    env:
+      DATABASE_URL: mysql://anajao_test:ci-test-only@127.0.0.1:3306/unused_dev
+      MIGRATION_DATABASE_URL: mysql://anajao_test:ci-test-only@127.0.0.1:3306/anajao_ecommerce_test
+      TEST_DATABASE_URL: mysql://anajao_test:ci-test-only@127.0.0.1:3306/anajao_ecommerce_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run db:generate
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm test
+      - run: npm run build
+      - run: npm run db:migrate
+      - run: npm run test:integration
+      - run: npm run test:smoke
+        env:
+          DATABASE_URL: mysql://anajao_test:ci-test-only@127.0.0.1:3306/anajao_ecommerce_test
