@@ -1,5 +1,20 @@
 # Milestone 01 test execution report
 
+## Startup database message — 2026-10-15
+
+Startup now probes the database and logs `Connected to database successfully`
+only after a successful ping. Failure logs `Database connection failed` without
+database details. These messages use the configured Pino log level.
+
+Verification: `npm ci`, `npm run db:generate`, `npm run typecheck`,
+`npm run lint`, `npm test` (18 tests), `npm run build`, and
+`npm run test:smoke` passed. Smoke checks verified startup, health, readiness,
+Swagger, and graceful shutdown against the local database. Installation and
+HTTP tests required execution outside the sandbox. `npm run format:check`
+reported existing formatting issues in 58 untracked `.agents/skills` files;
+those files were left unchanged. No schema changes were made, and migrations
+and the integration suite were not rerun for this logging change.
+
 Executed 2026-10-13 on macOS against XAMPP MariaDB 10.4.28. Runtime: Node.js v24.21.0 (project-local executable selected with `export PATH="$PWD/node_modules/node/bin:$PATH"`). Prisma 7.10.0, Vitest 5.0.4. No production database used.
 
 | Command / check                          | Actual result                                                    |

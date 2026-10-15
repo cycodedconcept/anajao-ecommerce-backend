@@ -8,9 +8,13 @@ const logger = createLogger(config.LOG_LEVEL);
 const database = createDatabase(config);
 let shuttingDown = false;
 const app = createApp(config, database, logger, () => shuttingDown);
-const server = app.listen(config.PORT, config.HOST, () =>
-  logger.info({ port: config.PORT }, 'Server listening'),
-);
+const server = app.listen(config.PORT, config.HOST, () => {
+  logger.info({ port: config.PORT }, 'Server listening');
+  void database.ping().then(
+    () => logger.info('Connected to database successfully'),
+    () => logger.error('Database connection failed'),
+  );
+});
 async function shutdown(exitCode: number) {
   if (shuttingDown) return;
   shuttingDown = true;
