@@ -1,3 +1,4 @@
+import { identityOpenapiPaths } from './identity-contracts.js';
 const success = (status: string) => ({
   description: 'Success',
   content: {
@@ -27,11 +28,13 @@ export const openapi = {
   openapi: '3.0.3',
   info: {
     title: 'KAM VOGUE API',
-    version: '0.1.0',
-    description: 'Milestone 01 backend foundation',
+    version: '0.2.0',
+    description:
+      'Foundation, authentication, customer identity and role-based access. Email/SMS and social providers remain unconfigured.',
   },
   servers: [{ url: '/' }],
   paths: {
+    ...identityOpenapiPaths(),
     '/api/v1/health': {
       get: {
         summary: 'Application liveness',
@@ -55,6 +58,9 @@ export const openapi = {
     },
   },
   components: {
+    securitySchemes: {
+      bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+    },
     schemas: {
       Error: {
         type: 'object',

@@ -2,7 +2,145 @@ generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
 }
+
 datasource db {
   provider = "mysql"
 }
-// No business models in milestone 01. The baseline migration records infrastructure readiness.
+
+enum Role {
+  CUSTOMER
+  ADMIN
+  SELLER
+}
+
+enum AccountStatus {
+  ACTIVE
+  DELETION_PENDING
+}
+
+enum ChallengePurpose {
+  EMAIL
+  PHONE
+  PASSWORD_RESET
+}
+
+enum PrivacyKind {
+  EXPORT
+  DELETE
+}
+
+model User {
+  id              String                  @id @default(uuid()) @db.Char(36)
+  email           String                  @unique @db.VarChar(254)
+  passwordHash    String                  @db.VarChar(255)
+  role            Role                    @default(CUSTOMER)
+  status          AccountStatus           @default(ACTIVE)
+  emailVerifiedAt DateTime?               @db.DateTime(3)
+  createdAt       DateTime                @default(now()) @db.DateTime(3)
+  updatedAt       DateTime                @updatedAt @db.DateTime(3)
+  profile         CustomerProfile?
+  sessions        Session[]
+  challenges      VerificationChallenge[]
+  addresses       Address[]
+  mfa             MfaFactor?
+  privacyRequests PrivacyRequest[]
+  auditEvents     AuditEvent[]
+}
+
+model CustomerProfile {
+  userId          String    @id @db.Char(36)
+  displayName     String    @db.VarChar(100)
+  phone           String?   @db.VarChar(16)
+  phoneVerifiedAt DateTime? @db.DateTime(3)
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  id            String         @id @default(uuid()) @db.Char(36)
+  userId        String         @db.Char(36)
+  mfaVerifiedAt DateTime?      @db.DateTime(3)
+  expiresAt     DateTime       @db.DateTime(3)
+  revokedAt     DateTime?      @db.DateTime(3)
+  createdAt     DateTime       @default(now()) @db.DateTime(3)
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshTokens RefreshToken[]
+
+  @@index([userId, revokedAt])
+  @@index([expiresAt])
+}
+
+model RefreshToken {
+  id         String    @id @default(uuid()) @db.Char(36)
+  sessionId  String    @db.Char(36)
+  tokenHash  String    @unique @db.Char(64)
+  consumedAt DateTime? @db.DateTime(3)
+  expiresAt  DateTime  @db.DateTime(3)
+  createdAt  DateTime  @default(now()) @db.DateTime(3)
+  session    Session   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([expiresAt])
+}
+
+model VerificationChallenge {
+  id         String           @id @default(uuid()) @db.Char(36)
+  userId     String           @db.Char(36)
+  purpose    ChallengePurpose
+  tokenHash  String           @unique @db.Char(64)
+  target     String           @db.VarChar(254)
+  expiresAt  DateTime         @db.DateTime(3)
+  consumedAt DateTime?        @db.DateTime(3)
+  createdAt  DateTime         @default(now()) @db.DateTime(3)
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, purpose, consumedAt])
+  @@index([expiresAt])
+}
+
+model Address {
+  id         String   @id @default(uuid()) @db.Char(36)
+  userId     String   @db.Char(36)
+  label      String   @db.VarChar(40)
+  recipient  String   @db.VarChar(100)
+  line1      String   @db.VarChar(150)
+  line2      String?  @db.VarChar(150)
+  city       String   @db.VarChar(100)
+  region     String   @db.VarChar(100)
+  postalCode String?  @db.VarChar(20)
+  country    String   @db.Char(2)
+  createdAt  DateTime @default(now()) @db.DateTime(3)
+  updatedAt  DateTime @updatedAt @db.DateTime(3)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model MfaFactor {
+  userId          String    @id @db.Char(36)
+  encryptedSecret String    @db.VarChar(255)
+  enabledAt       DateTime? @db.DateTime(3)
+  lastUsedStep    Int       @default(-1)
+  createdAt       DateTime  @default(now()) @db.DateTime(3)
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PrivacyRequest {
+  id          String      @id @default(uuid()) @db.Char(36)
+  userId      String      @db.Char(36)
+  kind        PrivacyKind
+  createdAt   DateTime    @default(now()) @db.DateTime(3)
+  completedAt DateTime?   @db.DateTime(3)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model AuditEvent {
+  id        String   @id @default(uuid()) @db.Char(36)
+  userId    String?  @db.Char(36)
+  event     String   @db.VarChar(64)
+  createdAt DateTime @default(now()) @db.DateTime(3)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+}

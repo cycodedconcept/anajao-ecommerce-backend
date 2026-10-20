@@ -1,0 +1,2088 @@
+{
+  "info": {
+    "name": "Anajao Milestone 02 — Identity and Access",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Manual workflow collection; see docs/identity.md. Successful delivery examples require a verified adapter. Default server returns 503 for delivery and social providers. Examples are illustrative, not captured production responses. Do not run every request sequentially: logout/reset/MFA/deletion invalidate sessions."
+  },
+  "item": [
+    {
+      "name": "Identity workflows",
+      "item": [
+        {
+          "name": "Register a customer (requires configured email delivery)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/register",
+            "description": "Register a customer (requires configured email delivery)",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"displayName\": \"Example Customer\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(202));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/auth/register",
+                "description": "Register a customer (requires configured email delivery)",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"displayName\": \"Example Customer\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Accepted",
+              "code": 202,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"message\": \"If the account is eligible, instructions will be sent\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login; add a six-digit code when MFA is enabled",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/login",
+            "description": "Login; add a six-digit code when MFA is enabled",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(200));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/auth/login",
+                "description": "Login; add a six-digit code when MFA is enabled",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"accessToken\": \"<signed-access-token>\",\n    \"refreshToken\": \"<opaque-refresh-token>\",\n    \"tokenType\": \"Bearer\",\n    \"expiresIn\": 600,\n    \"mfaRequired\": false\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Rotate refresh token; replay revokes its session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/refresh",
+            "description": "Rotate refresh token; replay revokes its session",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(200));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/auth/refresh",
+                "description": "Rotate refresh token; replay revokes its session",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"accessToken\": \"<signed-access-token>\",\n    \"refreshToken\": \"<opaque-refresh-token>\",\n    \"tokenType\": \"Bearer\",\n    \"expiresIn\": 600\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Consume email verification token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/verify",
+            "description": "Consume email verification token",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{verificationToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(200));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/auth/verify",
+                "description": "Consume email verification token",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"token\": \"{{verificationToken}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"verified\": true\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Resend email verification instructions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/resend-verification",
+            "description": "Resend email verification instructions",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(202));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/auth/resend-verification",
+                "description": "Resend email verification instructions",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{email}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Accepted",
+              "code": 202,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"message\": \"If the account is eligible, instructions will be sent\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Request one-time password recovery",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/forgot-password",
+            "description": "Request one-time password recovery",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(202));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/auth/forgot-password",
+                "description": "Request one-time password recovery",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{email}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Accepted",
+              "code": 202,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"message\": \"If the account is eligible, instructions will be sent\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Reset password and revoke all sessions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/reset-password",
+            "description": "Reset password and revoke all sessions",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{resetToken}}\",\n  \"password\": \"{{newPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(200));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/auth/reset-password",
+                "description": "Reset password and revoke all sessions",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"token\": \"{{resetToken}}\",\n  \"password\": \"{{newPassword}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"changed\": true\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Revoke current session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/logout",
+            "description": "Revoke current session"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(200));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/auth/logout",
+                "description": "Revoke current session"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"loggedOut\": true\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Revoke all sessions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/logout-all",
+            "description": "Revoke all sessions"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(200));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/auth/logout-all",
+                "description": "Revoke all sessions"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"loggedOut\": true\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Read own account",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/me",
+            "description": "Read own account"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(200));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/me",
+                "description": "Read own account"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"00000000-0000-4000-8000-000000000001\",\n    \"email\": \"customer@example.test\",\n    \"role\": \"CUSTOMER\",\n    \"emailVerified\": true,\n    \"displayName\": \"Example Customer\",\n    \"phone\": null,\n    \"phoneVerified\": false,\n    \"mfaEnabled\": false,\n    \"createdAt\": \"2026-10-20T12:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update own display name; email and roles are immutable here",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/me",
+            "description": "Update own display name; email and roles are immutable here",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"displayName\": \"Updated Customer\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(200));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/me",
+                "description": "Update own display name; email and roles are immutable here",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"displayName\": \"Updated Customer\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"00000000-0000-4000-8000-000000000001\",\n    \"email\": \"customer@example.test\",\n    \"role\": \"CUSTOMER\",\n    \"emailVerified\": true,\n    \"displayName\": \"Updated Customer\",\n    \"phone\": null,\n    \"phoneVerified\": false,\n    \"mfaEnabled\": false,\n    \"createdAt\": \"2026-10-20T12:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Change password and revoke all sessions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/me/password",
+            "description": "Change password and revoke all sessions",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"{{password}}\",\n  \"password\": \"{{newPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(200));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/me/password",
+                "description": "Change password and revoke all sessions",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"currentPassword\": \"{{password}}\",\n  \"password\": \"{{newPassword}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"changed\": true\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Request phone verification (requires SMS adapter)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/me/phone",
+            "description": "Request phone verification (requires SMS adapter)",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+2348000000000\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(202));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/me/phone",
+                "description": "Request phone verification (requires SMS adapter)",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone\": \"+2348000000000\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Accepted",
+              "code": 202,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"message\": \"If the account is eligible, instructions will be sent\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Verify own pending phone",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/me/phone/verify",
+            "description": "Verify own pending phone",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{phoneToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(200));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/me/phone/verify",
+                "description": "Verify own pending phone",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"token\": \"{{phoneToken}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"verified\": true\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "List own addresses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/me/addresses",
+            "description": "List own addresses"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(200));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/me/addresses",
+                "description": "List own addresses"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"userId\": \"00000000-0000-4000-8000-000000000001\",\n      \"label\": \"Home\",\n      \"recipient\": \"Example Customer\",\n      \"line1\": \"1 Example Street\",\n      \"line2\": null,\n      \"city\": \"Lagos\",\n      \"region\": \"Lagos\",\n      \"postalCode\": null,\n      \"country\": \"NG\",\n      \"createdAt\": \"2026-10-20T12:00:00.000Z\",\n      \"updatedAt\": \"2026-10-20T12:00:00.000Z\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Save an address (maximum 20)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/me/addresses",
+            "description": "Save an address (maximum 20)",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"Home\",\n  \"recipient\": \"Example Customer\",\n  \"line1\": \"1 Example Street\",\n  \"city\": \"Lagos\",\n  \"region\": \"Lagos\",\n  \"country\": \"NG\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(201));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);",
+                  "if (data && data.id) pm.environment.set('addressId', data.id);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/me/addresses",
+                "description": "Save an address (maximum 20)",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"label\": \"Home\",\n  \"recipient\": \"Example Customer\",\n  \"line1\": \"1 Example Street\",\n  \"city\": \"Lagos\",\n  \"region\": \"Lagos\",\n  \"country\": \"NG\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"00000000-0000-4000-8000-000000000001\",\n    \"userId\": \"00000000-0000-4000-8000-000000000001\",\n    \"label\": \"Home\",\n    \"recipient\": \"Example Customer\",\n    \"line1\": \"1 Example Street\",\n    \"line2\": null,\n    \"city\": \"Lagos\",\n    \"region\": \"Lagos\",\n    \"postalCode\": null,\n    \"country\": \"NG\",\n    \"createdAt\": \"2026-10-20T12:00:00.000Z\",\n    \"updatedAt\": \"2026-10-20T12:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Replace own saved address",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/me/addresses/{{addressId}}",
+            "description": "Replace own saved address",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"Office\",\n  \"recipient\": \"Example Customer\",\n  \"line1\": \"1 Example Street\",\n  \"city\": \"Lagos\",\n  \"region\": \"Lagos\",\n  \"country\": \"NG\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(200));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/me/addresses/{{addressId}}",
+                "description": "Replace own saved address",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"label\": \"Office\",\n  \"recipient\": \"Example Customer\",\n  \"line1\": \"1 Example Street\",\n  \"city\": \"Lagos\",\n  \"region\": \"Lagos\",\n  \"country\": \"NG\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"00000000-0000-4000-8000-000000000001\",\n    \"userId\": \"00000000-0000-4000-8000-000000000001\",\n    \"label\": \"Office\",\n    \"recipient\": \"Example Customer\",\n    \"line1\": \"1 Example Street\",\n    \"line2\": null,\n    \"city\": \"Lagos\",\n    \"region\": \"Lagos\",\n    \"postalCode\": null,\n    \"country\": \"NG\",\n    \"createdAt\": \"2026-10-20T12:00:00.000Z\",\n    \"updatedAt\": \"2026-10-20T12:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete own saved address",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/me/addresses/{{addressId}}",
+            "description": "Delete own saved address"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(200));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/me/addresses/{{addressId}}",
+                "description": "Delete own saved address"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"deleted\": true\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Begin password-confirmed TOTP enrollment; protect returned secret",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/me/mfa/setup",
+            "description": "Begin password-confirmed TOTP enrollment; protect returned secret",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(200));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/me/mfa/setup",
+                "description": "Begin password-confirmed TOTP enrollment; protect returned secret",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"password\": \"{{password}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"secret\": \"<base32-secret>\",\n    \"uri\": \"otpauth://totp/Anajao:example?secret=<secret>&issuer=Anajao\",\n    \"expiresIn\": 600\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Confirm TOTP enrollment and revoke sessions; login with a fresh code",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/me/mfa/confirm",
+            "description": "Confirm TOTP enrollment and revoke sessions; login with a fresh code",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"{{mfaCode}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(200));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/me/mfa/confirm",
+                "description": "Confirm TOTP enrollment and revoke sessions; login with a fresh code",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"code\": \"{{mfaCode}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"enabled\": true,\n    \"loginRequired\": true\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "List own privacy requests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/me/privacy-requests",
+            "description": "List own privacy requests"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(200));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/me/privacy-requests",
+                "description": "List own privacy requests"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": \"00000000-0000-4000-8000-000000000001\",\n      \"userId\": \"00000000-0000-4000-8000-000000000001\",\n      \"kind\": \"EXPORT\",\n      \"createdAt\": \"2026-10-20T12:00:00.000Z\",\n      \"completedAt\": null\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Request export or deletion; deletion immediately suspends account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/me/privacy-requests",
+            "description": "Request export or deletion; deletion immediately suspends account",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kind\": \"EXPORT\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(202));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/me/privacy-requests",
+                "description": "Request export or deletion; deletion immediately suspends account",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"kind\": \"EXPORT\",\n  \"password\": \"{{password}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Accepted",
+              "code": 202,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"00000000-0000-4000-8000-000000000001\",\n    \"userId\": \"00000000-0000-4000-8000-000000000001\",\n    \"kind\": \"EXPORT\",\n    \"createdAt\": \"2026-10-20T12:00:00.000Z\",\n    \"completedAt\": null\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Verify admin role and session MFA",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/admin/access",
+            "description": "Verify admin role and session MFA"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(200));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/admin/access",
+                "description": "Verify admin role and session MFA"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"role\": \"ADMIN\",\n    \"mfaVerified\": true\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Verify seller role and session MFA",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/seller/access",
+            "description": "Verify seller role and session MFA"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(200));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/seller/access",
+                "description": "Verify seller role and session MFA"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"role\": \"SELLER\",\n    \"mfaVerified\": true\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "google login unavailable pending verified provider integration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/social/google",
+            "description": "google login unavailable pending verified provider integration"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(503));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/auth/social/google",
+                "description": "google login unavailable pending verified provider integration"
+              },
+              "status": "Service Unavailable",
+              "code": 503,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"PROVIDER_NOT_CONFIGURED\",\n    \"message\": \"Social login is not configured\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "apple login unavailable pending verified provider integration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/social/apple",
+            "description": "apple login unavailable pending verified provider integration"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected status', () => pm.response.to.have.status(503));",
+                  "pm.test('JSON envelope', () => pm.expect(pm.response.json()).to.have.property('success'));",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.accessToken) pm.environment.set('accessToken', data.accessToken);",
+                  "if (data && data.refreshToken) pm.environment.set('refreshToken', data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example response (illustrative)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/auth/social/apple",
+                "description": "apple login unavailable pending verified provider integration"
+              },
+              "status": "Service Unavailable",
+              "code": 503,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"PROVIDER_NOT_CONFIGURED\",\n    \"message\": \"Social login is not configured\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Negative cases",
+      "item": [
+        {
+          "name": "Unauthenticated account read",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/me"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected rejection', () => pm.response.to.have.status(401));",
+                  "pm.test('Error code', () => pm.expect(pm.response.json().error.code).to.eql('UNAUTHORIZED'));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example rejection",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/me"
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"UNAUTHORIZED\",\n    \"message\": \"Request rejected\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Reject public admin assignment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"displayName\": \"Example\",\n  \"role\": \"ADMIN\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected rejection', () => pm.response.to.have.status(400));",
+                  "pm.test('Error code', () => pm.expect(pm.response.json().error.code).to.eql('VALIDATION_ERROR'));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example rejection",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/auth/register",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"displayName\": \"Example\",\n  \"role\": \"ADMIN\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"VALIDATION_ERROR\",\n    \"message\": \"Request rejected\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Reject invalid reset token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/reset-password",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n  \"password\": \"{{newPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected rejection', () => pm.response.to.have.status(400));",
+                  "pm.test('Error code', () => pm.expect(pm.response.json().error.code).to.eql('INVALID_TOKEN'));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example rejection",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/auth/reset-password",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"token\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n  \"password\": \"{{newPassword}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"INVALID_TOKEN\",\n    \"message\": \"Request rejected\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Customer denied admin access",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/admin/access"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected rejection', () => pm.response.to.have.status(403));",
+                  "pm.test('Error code', () => pm.expect(pm.response.json().error.code).to.eql('FORBIDDEN'));"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Example rejection",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/admin/access"
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"FORBIDDEN\",\n    \"message\": \"Request rejected\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
