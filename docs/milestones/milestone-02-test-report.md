@@ -77,4 +77,8 @@ Production build startup and SIGTERM shutdown: PASS
 
 Real email/SMS delivery and Google/Apple login are intentionally unconfigured. Their failure gates and injected test delivery are verified; live provider success is not claimed. No real admin account was provisioned. Privacy fulfillment/erasure, MFA recovery operations, production key rotation, shared rate-limit storage and retention cleanup were not executed. No Truehost deployment/database-TLS verification, browser visual inspection or Postman GUI import occurred. Milestone 03 is a prompt only.
 
-Remote CI is separate from local verification; publication and observed remote evidence are recorded after PR creation. A generated workflow is not treated as a successful CI execution.
+## Publication and remote verification
+
+The branch is pushed and [PR #5](https://github.com/cycodedconcept/anajao-ecommerce-backend/pull/5) is open against develop, without automatic merge. `gh pr view 5 --json url,state,baseRefName,headRefName,headRefOid,statusCheckRollup` confirmed OPEN, base develop, and SUCCESS for Backend CI's verify job on commit `734b0d7` on 2026-10-20. [Observed GitHub Actions run](https://github.com/cycodedconcept/anajao-ecommerce-backend/actions/runs/39452486694).
+
+This remote result is actual observed execution, separate from the local results above. This publication note is a documentation-only follow-up; consult the PR for checks on later commits.

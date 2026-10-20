@@ -53,3 +53,7 @@ See [test execution report](milestone-02-test-report.md) for actual commands and
 Review the additive migration and locking order, refresh replay behavior, MFA/session gates, admin bootstrap and privacy semantics. Real delivery and social login remain disabled; no credentials or external service claims are fabricated. Rate limiting is per process. Retention cleanup, manual privacy fulfillment, MFA recovery and encryption-key rotation require operational procedures before production. Truehost runtime/database/TLS constraints remain unverified.
 
 New local signing/encryption keys were generated privately in ignored `.env` without printing values; tests and smoke use ephemeral keys. Never commit `.env` or exported Postman environments with real tokens. Review/merge the PR manually before authorizing Milestone 03.
+
+## Published review artifact
+
+Implementation commit `10a0840` and verification/handoff commit `734b0d7` are pushed on `feature/milestone-02-identity-access`. [PR #5](https://github.com/cycodedconcept/anajao-ecommerce-backend/pull/5) targets develop and remains open/unmerged. GitHub Backend CI passed for `734b0d7`, observed directly on 2026-10-20: [execution evidence](https://github.com/cycodedconcept/anajao-ecommerce-backend/actions/runs/39452486694). This publication note is a documentation-only follow-up. Milestone 03 awaits the owner's review and explicit authorization.
