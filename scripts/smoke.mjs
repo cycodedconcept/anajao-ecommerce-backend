@@ -7,6 +7,7 @@ const port = 13987;
 const child = spawn(process.execPath, ['dist/server.js'], {
   env: {
     ...process.env,
+    NODE_ENV: 'production',
     PORT: String(port),
     LOG_LEVEL: 'silent',
     AUTH_SIGNING_KEY: randomBytes(32).toString('hex'),

@@ -774,4 +774,60 @@ describe('identity lifecycle and database invariants', () => {
       .send({ email: email.toUpperCase(), password });
     expect(denied.status).toBe(429);
   });
+  it('enforces database uniqueness under concurrent registration and foreign keys', async () => {
+    const h = harness();
+    const email = `${prefix}-concurrent@example.test`;
+    const results = await Promise.all(
+      [1, 2].map(() =>
+        request(h.app)
+          .post('/api/v1/auth/register')
+          .send({ email, password, displayName: 'Concurrent' }),
+      ),
+    );
+    expect(results.map((r) => r.status)).toEqual([202, 202]);
+    expect(await db.user.count({ where: { email } })).toBe(1);
+    expect(h.delivery.messages).toHaveLength(1);
+    await expect(
+      db.address.create({ data: { ...address, userId: randomUUID() } }),
+    ).rejects.toMatchObject({ code: 'P2003' });
+  });
+  it('rejects expired MFA enrollment and expired sessions', async () => {
+    const c = await customer();
+    const setup = await request(c.app)
+      .post('/api/v1/me/mfa/setup')
+      .set('Authorization', bearer(c.access))
+      .send({ password });
+    expect(setup.status).toBe(200);
+    await db.mfaFactor.update({
+      where: { userId: c.user.id },
+      data: { createdAt: new Date(0) },
+    });
+    const code = await generate({ secret: setup.body.data.secret as string });
+    expect(
+      (
+        await request(c.app)
+          .post('/api/v1/me/mfa/confirm')
+          .set('Authorization', bearer(c.access))
+          .send({ code })
+      ).status,
+    ).toBe(400);
+    await db.session.updateMany({
+      where: { userId: c.user.id },
+      data: { expiresAt: new Date(0) },
+    });
+    expect(
+      (
+        await request(c.app)
+          .get('/api/v1/me')
+          .set('Authorization', bearer(c.access))
+      ).status,
+    ).toBe(401);
+    expect(
+      (
+        await request(c.app)
+          .post('/api/v1/auth/refresh')
+          .send({ refreshToken: c.refresh })
+      ).status,
+    ).toBe(401);
+  });
 });
