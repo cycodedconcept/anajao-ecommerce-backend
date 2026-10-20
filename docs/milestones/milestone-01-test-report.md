@@ -72,4 +72,12 @@ No destructive database reset was executed. No Truehost deployment or provider T
 
 ## Publication
 
-Implementation `0aa04b6` is pushed on `feature/milestone-01-backend-foundation`. [PR #1](https://github.com/cycodedconcept/anajao-ecommerce-backend/pull/1) targets develop. Consult the PR checks for the latest remote CI result; all local results above were executed successfully.
+Implementation `0aa04b6` and subsequent documentation/startup logging changes were pushed on `feature/milestone-01-backend-foundation`. [PR #1](https://github.com/cycodedconcept/anajao-ecommerce-backend/pull/1) is merged into develop. On 2026-10-20, `gh pr view 1 --json state,url,mergeStateStatus,statusCheckRollup` confirmed MERGED and SUCCESS for the Backend CI verify job, completed 2026-10-15. [Remote execution evidence](https://github.com/cycodedconcept/anajao-ecommerce-backend/actions/runs/38723420449).
+
+## Handoff cleanup — 2026-10-20
+
+Local develop was fast-forwarded to origin/develop at `b2191d6`. Updated the milestone summary and publication evidence to reflect the merged PR and observed CI success. Excluded locally installed assistant tooling directories (`.agents`, `.claude`, `.windsurf`) from Prettier so third-party skill formatting does not fail application formatting checks. Existing untracked tooling and prompt files were preserved.
+
+This handoff changes documentation and formatter exclusions only; application code, dependencies, schema and endpoint contracts are unchanged. Earlier runtime/database results remain historical evidence.
+
+Verification: `npm run format:check` and `git diff --check` passed. The untracked `docs/prompts/BACKEND_CODEX_PROMPTS.md` received formatting-only cleanup and remains untracked. Runtime and database suites were not rerun for this documentation-only handoff.
