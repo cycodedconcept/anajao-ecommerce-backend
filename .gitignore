@@ -7,3 +7,10 @@ coverage/
 src/generated/
 *.log
 .DS_Store
+
+# Private Postman overrides and unsanitized runner data
+postman/*.local.json
+postman/.private/
+reports/api-tests/raw/
+reports/api-tests/latest.json
+reports/api-tests/latest.md

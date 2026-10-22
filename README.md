@@ -41,3 +41,7 @@ Integration tests require a separate `TEST_DATABASE_URL` whose database name end
 Liveness does not query the database; readiness returns 503 if the database is unreachable or shutdown has started. Responses use `{success:true,data}` or `{success:false,error:{code,message}}`. Unknown health query parameters return 400. No public endpoint exposes connection strings, database versions or internal errors.
 
 See [database operations](docs/database.md), [identity/Postman walkthrough](docs/identity.md), [Milestone 02 report](docs/milestones/milestone-02-summary.md), [execution evidence](docs/milestones/milestone-02-test-report.md) and [Milestone 03 prompt](docs/prompts/milestone-03-catalog-inventory.md).
+
+## API collection workflow
+
+Use the canonical **Anajao Ecommerce API** collection and secret-free environment in `postman/`. Run `npm run test:api:prepare` then `npm run test:api` on a supported official Postman CLI host. The workflow starts an isolated loopback test server, runs actual collection requests, checks database effects and writes sanitized reports. See [setup, current macOS CLI blocker, CI and future milestone requirements](postman/README.md). Historical milestone collections remain available.
