@@ -16,6 +16,8 @@ if result.returncode:
 content = Path('.env.example').read_text()
 for name, password in passwords.items():
     content = content.replace(f'{name}:CHANGE_ME', f'{name}:{password}')
+content = content.replace('GENERATE_64_HEX_CHARACTERS', secrets.token_hex(32))
+content = content.replace('GENERATE_DIFFERENT_64_HEX_CHARACTERS', secrets.token_hex(32))
 with open('.env', 'x') as output:
     output.write(content)
 Path('.env').chmod(0o600)

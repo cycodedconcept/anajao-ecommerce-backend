@@ -3,11 +3,13 @@ import { createApp } from './app.js';
 import { parseEnv } from './config/env.js';
 import { createLogger } from './config/logger.js';
 import { createDatabase } from './database/client.js';
+import { createIdentity } from './modules/identity/index.js';
 const config = parseEnv(process.env);
 const logger = createLogger(config.LOG_LEVEL);
 const database = createDatabase(config);
 let shuttingDown = false;
-const app = createApp(config, database, logger, () => shuttingDown);
+const identity = createIdentity(config, database.client);
+const app = createApp(config, database, logger, () => shuttingDown, identity);
 const server = app.listen(config.PORT, config.HOST, () => {
   logger.info({ port: config.PORT }, 'Server listening');
   void database.ping().then(
