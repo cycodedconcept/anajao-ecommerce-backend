@@ -16,6 +16,17 @@ const schema = z.object({
   HOST: z.string().min(1).default('127.0.0.1'),
   PORT: z.coerce.number().int().min(1).max(65535).default(3000),
   DATABASE_URL: databaseUrl,
+  AUTH_SIGNING_KEY: z
+    .string()
+    .regex(/^[a-f0-9]{64}$/)
+    .optional(),
+  MFA_ENCRYPTION_KEY: z
+    .string()
+    .regex(/^[a-f0-9]{64}$/)
+    .optional(),
+  AUTH_ISSUER: z.string().min(1).max(100).default('anajao'),
+  AUTH_AUDIENCE: z.string().min(1).max(100).default('anajao-api'),
+  AUTH_RATE_LIMIT_MAX: z.coerce.number().int().min(1).max(100).default(10),
   DB_POOL_SIZE: z.coerce.number().int().min(1).max(50).default(5),
   DB_CONNECT_TIMEOUT_MS: z.coerce
     .number()

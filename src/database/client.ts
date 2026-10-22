@@ -5,7 +5,9 @@ export interface Database {
   ping(): Promise<void>;
   disconnect(): Promise<void>;
 }
-export function createDatabase(config: Config): Database {
+export function createDatabase(
+  config: Config,
+): Database & { client: PrismaClient } {
   const url = new URL(config.DATABASE_URL);
   const adapter = new PrismaMariaDb({
     host: url.hostname,
@@ -20,6 +22,7 @@ export function createDatabase(config: Config): Database {
   });
   const client = new PrismaClient({ adapter });
   return {
+    client,
     async ping() {
       await client.$queryRaw`SELECT 1`;
     },

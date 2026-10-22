@@ -8,7 +8,14 @@ import { createLogger } from '../../src/config/logger.js';
 const url = process.env.TEST_DATABASE_URL;
 if (!url || !new URL(url).pathname.endsWith('_test'))
   throw new Error('An isolated TEST_DATABASE_URL ending in _test is required');
-if (url === process.env.DATABASE_URL)
+const schemaIdentity = (value: string) => {
+  const u = new URL(value);
+  return `${u.hostname}:${u.port || 3306}${u.pathname}`;
+};
+if (
+  process.env.DATABASE_URL &&
+  schemaIdentity(url) === schemaIdentity(process.env.DATABASE_URL)
+)
   throw new Error('Integration database must differ from application database');
 const config = parseEnv({
   ...process.env,

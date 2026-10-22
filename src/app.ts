@@ -13,11 +13,14 @@ import { apiRoutes } from './routes/index.js';
 import { errorHandler } from './common/middleware/error-handler.js';
 import { AppError } from './common/errors/app-error.js';
 import { openapi } from './docs/openapi.js';
+import type { IdentityService } from './modules/identity/identity.service.js';
+import { identityRoutes } from './modules/identity/identity.routes.js';
 export function createApp(
   config: Config,
   database: Database,
   logger: Logger,
   isShuttingDown = () => false,
+  identity?: IdentityService,
 ) {
   const app = express();
   app.disable('x-powered-by');
@@ -58,6 +61,7 @@ export function createApp(
   );
   app.use(express.json({ limit: '32kb' }));
   app.use('/api/v1', apiRoutes(new HealthService(database, isShuttingDown)));
+  if (identity) app.use('/api/v1', identityRoutes(identity, config));
   app.get('/api-docs/openapi.json', (_req, res) => {
     res.json(openapi);
   });

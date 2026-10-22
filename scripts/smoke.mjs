@@ -2,9 +2,17 @@ import 'dotenv/config';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import assert from 'node:assert/strict';
+import { randomBytes } from 'node:crypto';
 const port = 13987;
 const child = spawn(process.execPath, ['dist/server.js'], {
-  env: { ...process.env, PORT: String(port), LOG_LEVEL: 'silent' },
+  env: {
+    ...process.env,
+    NODE_ENV: 'production',
+    PORT: String(port),
+    LOG_LEVEL: 'silent',
+    AUTH_SIGNING_KEY: randomBytes(32).toString('hex'),
+    MFA_ENCRYPTION_KEY: randomBytes(32).toString('hex'),
+  },
   stdio: 'ignore',
 });
 const exited = once(child, 'exit');
@@ -31,6 +39,8 @@ try {
     ['/api-docs/', 200],
     ['/api-docs/openapi.json', 200],
     ['/missing', 404],
+    ['/api/v1/me', 401],
+    ['/api/v1/admin/access', 401],
   ]) {
     const res = await fetch(`http://127.0.0.1:${port}${path}`);
     assert.equal(res.status, status, path);
