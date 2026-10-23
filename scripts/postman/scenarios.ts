@@ -419,6 +419,16 @@ export const scenarios: Scenario[] = [
     auth: 'mainAccess',
   },
   {
+    name: 'Reject enrollment when MFA already enabled',
+    domain: 'customers',
+    method: 'POST',
+    path: '/me/mfa/setup',
+    status: 409,
+    error: 'MFA_ALREADY_ENABLED',
+    auth: 'adminAccess',
+    body: { password: '{{password}}' },
+  },
+  {
     name: 'Begin MFA enrollment',
     domain: 'customers',
     method: 'POST',
