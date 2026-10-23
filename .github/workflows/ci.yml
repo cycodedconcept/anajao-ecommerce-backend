@@ -46,3 +46,17 @@ jobs:
       - run: npm run test:smoke
         env:
           DATABASE_URL: mysql://anajao_test:ci-test-only@127.0.0.1:3306/anajao_ecommerce_test
+
+      - name: Execute isolated Postman API collection
+        id: api_tests
+        run: npm run test:api
+      - name: Upload sanitized API test reports
+        if: always() && steps.api_tests.outcome != 'skipped'
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-test-reports
+          path: |
+            reports/api-tests/latest.json
+            reports/api-tests/latest.md
+          if-no-files-found: error
+          retention-days: 14

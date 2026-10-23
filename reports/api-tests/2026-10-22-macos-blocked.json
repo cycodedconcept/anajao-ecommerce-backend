@@ -1,0 +1,951 @@
+{
+  "runner": "not started",
+  "runnerVersion": "unknown",
+  "generatedAt": "2026-10-22T08:51:11.821Z",
+  "passed": false,
+  "requests": [
+    {
+      "name": "Liveness succeeds",
+      "executed": false,
+      "expectedStatus": 200,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Readiness succeeds",
+      "executed": false,
+      "expectedStatus": 200,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Liveness rejects unknown query",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Readiness rejects unknown query",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Readiness fails with unavailable dependency",
+      "executed": false,
+      "expectedStatus": 503,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Unknown resource returns not found",
+      "executed": false,
+      "expectedStatus": 404,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Register customer",
+      "executed": false,
+      "expectedStatus": 202,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Duplicate registration is generic",
+      "executed": false,
+      "expectedStatus": 202,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Reject public privilege assignment",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Login rejects unverified customer",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Consume email verification",
+      "executed": false,
+      "expectedStatus": 200,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Reject reused verification",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Resend verification instructions",
+      "executed": false,
+      "expectedStatus": 202,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Login customer",
+      "executed": false,
+      "expectedStatus": 200,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Reject wrong password",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Reject unknown account",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Rotate refresh token",
+      "executed": false,
+      "expectedStatus": 200,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Reject refresh replay",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Reject replacement after replay",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Logout session",
+      "executed": false,
+      "expectedStatus": 200,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Reject logged out access",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Logout all sessions",
+      "executed": false,
+      "expectedStatus": 200,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Reject second session after logout all",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Request password recovery",
+      "executed": false,
+      "expectedStatus": 202,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Unknown recovery remains generic",
+      "executed": false,
+      "expectedStatus": 202,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Reset password",
+      "executed": false,
+      "expectedStatus": 200,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Reject reused password reset",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Reset invalidates existing access",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Login with changed password",
+      "executed": false,
+      "expectedStatus": 200,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "google provider fails closed",
+      "executed": false,
+      "expectedStatus": 503,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "apple provider fails closed",
+      "executed": false,
+      "expectedStatus": 503,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Read own profile",
+      "executed": false,
+      "expectedStatus": 200,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Update own profile",
+      "executed": false,
+      "expectedStatus": 200,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Reject profile privilege change",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Request phone verification",
+      "executed": false,
+      "expectedStatus": 202,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Verify phone",
+      "executed": false,
+      "expectedStatus": 200,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Reject phone token reuse",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Save address",
+      "executed": false,
+      "expectedStatus": 201,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "List addresses with pagination",
+      "executed": false,
+      "expectedStatus": 200,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Reject oversized page",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Reject cross-account address update",
+      "executed": false,
+      "expectedStatus": 404,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Reject cross-account address deletion",
+      "executed": false,
+      "expectedStatus": 404,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Replace own address",
+      "executed": false,
+      "expectedStatus": 200,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Delete own address",
+      "executed": false,
+      "expectedStatus": 200,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Deleted address returns not found",
+      "executed": false,
+      "expectedStatus": 404,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Begin MFA enrollment",
+      "executed": false,
+      "expectedStatus": 200,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Confirm MFA enrollment",
+      "executed": false,
+      "expectedStatus": 200,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "MFA enrollment revokes access",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Change password",
+      "executed": false,
+      "expectedStatus": 200,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Password change revokes access",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Request privacy export",
+      "executed": false,
+      "expectedStatus": 202,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Duplicate export is idempotent",
+      "executed": false,
+      "expectedStatus": 202,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "List privacy requests",
+      "executed": false,
+      "expectedStatus": 200,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Reject invalid privacy pagination",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Request account deletion",
+      "executed": false,
+      "expectedStatus": 202,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Deletion suspends access",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Admin with MFA allowed",
+      "executed": false,
+      "expectedStatus": 200,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Customer denied admin access",
+      "executed": false,
+      "expectedStatus": 403,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Admin without session MFA denied",
+      "executed": false,
+      "expectedStatus": 403,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Seller with MFA allowed",
+      "executed": false,
+      "expectedStatus": 200,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "Customer denied seller access",
+      "executed": false,
+      "expectedStatus": 403,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "POST /auth/register rejects invalid payload",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "POST /auth/login rejects invalid payload",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "POST /auth/refresh rejects invalid payload",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "POST /auth/verify rejects invalid payload",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "POST /auth/resend-verification rejects invalid payload",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "POST /auth/forgot-password rejects invalid payload",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "POST /auth/reset-password rejects invalid payload",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "POST /auth/logout requires authentication",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "POST /auth/logout-all requires authentication",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "GET /me requires authentication",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "PATCH /me requires authentication",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "PATCH /me rejects invalid payload",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "POST /me/password requires authentication",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "POST /me/password rejects invalid payload",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "POST /me/phone requires authentication",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "POST /me/phone rejects invalid payload",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "POST /me/phone/verify requires authentication",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "POST /me/phone/verify rejects invalid payload",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "GET /me/addresses requires authentication",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "POST /me/addresses requires authentication",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "POST /me/addresses rejects invalid payload",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "PUT /me/addresses/{id} requires authentication",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "PUT /me/addresses/{id} rejects invalid payload",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "DELETE /me/addresses/{id} requires authentication",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "POST /me/mfa/setup requires authentication",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "POST /me/mfa/setup rejects invalid payload",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "POST /me/mfa/confirm requires authentication",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "POST /me/mfa/confirm rejects invalid payload",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "GET /me/privacy-requests requires authentication",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "POST /me/privacy-requests requires authentication",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "POST /me/privacy-requests rejects invalid payload",
+      "executed": false,
+      "expectedStatus": 400,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "GET /admin/access requires authentication",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    },
+    {
+      "name": "GET /seller/access requires authentication",
+      "executed": false,
+      "expectedStatus": 401,
+      "actualStatus": null,
+      "passed": false,
+      "assertionsPassed": 0,
+      "assertionsFailed": 0,
+      "assertionsSkipped": 0
+    }
+  ],
+  "sideEffects": [],
+  "cleanupPassed": null,
+  "failureStage": "Postman CLI startup (requires a supported host)"
+}
