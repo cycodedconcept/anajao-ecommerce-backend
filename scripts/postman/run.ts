@@ -163,6 +163,9 @@ try {
       'json',
       '--reporter-json-export',
       raw,
+      '--reporter-json-structure',
+      'newman',
+      '--reporter-json-omitAllHeadersAndBody',
       '--timeout-request',
       '10000',
       '--timeout-script',
@@ -170,6 +173,7 @@ try {
       '--no-report-events',
     ];
     const code = await run(binary, args, childEnv);
+    stage = `report validation ${domain}`;
     const sanitized = sanitizeReport(
       JSON.parse(await readFile(raw, 'utf8')),
       cases.filter((c) => c.domain === domain),
