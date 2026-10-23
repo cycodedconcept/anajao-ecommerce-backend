@@ -1,6 +1,6 @@
 # Postman workflow execution evidence
 
-Date: 2026-10-22. Base: merged Milestone 02 on develop d80a8a1. This follow-up changes test tooling, generated artifacts and documentation; it adds no API endpoints or migrations.
+Local baseline: 2026-10-22. Follow-up verification: 2026-10-23. Base: merged Milestone 02 on develop d80a8a1. This follow-up changes test tooling, generated artifacts and documentation; it adds no API endpoints or migrations.
 
 ## Executed local checks
 
@@ -26,7 +26,7 @@ The collection startup attempt exited nonzero and did not prepare database fixtu
 
 ## Validation coverage
 
-The ten new workflow tests check official Postman v2.1 schema acceptance/rejection, generator synchronization, blank secret fields, coverage of every documented operation, production/remote/non-test/same-schema refusal, distinct local test acceptance and report sanitization/missing-request behavior. Existing OpenAPI and identity contract tests remain passing. The 94 collection scenarios and eleven side-effect checks are defined for execution on a supported official CLI host.
+The ten new workflow tests check official Postman v2.1 schema acceptance/rejection, generator synchronization, blank secret fields, coverage of every documented operation, production/remote/non-test/same-schema refusal, distinct local test acceptance and report sanitization/missing-request behavior. Existing OpenAPI and identity contract tests remain passing. The final collection contains 95 scenarios, including an explicit already-enabled MFA conflict (409), and eleven database side-effect checks. The historical Mac startup report predates the added conflict scenario and correctly retains its original 94 unexecuted requests.
 
 ## Issues found and resolved
 
@@ -36,7 +36,13 @@ JSON-schema validators required their explicit CommonJS default exports under th
 
 ## Remote collection execution
 
-Linux CI execution is pending at draft publication. Do not infer a pass from the workflow definition. Actual run identifiers, counts and dated sanitized artifacts will be recorded after execution and before review readiness.
+[Linux CI run 39941438320](https://github.com/cycodedconcept/anajao-ecommerce-backend/actions/runs/39941438320) passed on commit eb74098. Actual official Postman CLI 1.75.0 execution: **95 requests passed, 0 failed, 0 unexecuted; 354 assertions passed, 0 failed, 0 skipped; 11 database checks passed; fixture cleanup passed**. The CI job also passed installation, client generation, typecheck, lint, formatting, 45 unit/API/contract tests, build, isolated migrations, 22 integration tests and production startup smoke checks.
+
+Initial CI attempts failed before collection execution because the runner used an unsupported folder flag. The official CLI uses `-i`. The reporter now explicitly selects Newman-compatible JSON and omits bodies/headers; published reports still use a strict allowlist. Those failed attempts were not reported as passes. Safe diagnostic categories identify CLI startup failures without emitting raw output.
+
+Follow-up local checks on 2026-10-23 passed generation, typecheck, lint, formatting and all 45 tests. A sandboxed test attempt failed to bind loopback HTTP sockets (11 failures); the authorized rerun outside that restriction passed all 45. Collection generation now preserves repository formatting, and report validation requires every named status/schema/envelope/error/business assertion rather than accepting an assertion count alone.
+
+The final sanitized snapshots are [JSON](../../reports/api-tests/2026-10-23-linux-ci.json) and [Markdown](../../reports/api-tests/2026-10-23-linux-ci.md). [PR #7](https://github.com/cycodedconcept/anajao-ecommerce-backend/pull/7) targets develop; no merge is authorized or performed.
 
 ## Manual and external boundaries
 
