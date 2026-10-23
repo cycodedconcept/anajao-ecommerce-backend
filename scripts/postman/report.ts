@@ -44,6 +44,13 @@ export function sanitizeReport(
     const passed = assertions.filter((a) => !a.skipped && !a.error).length;
     const failed = assertions.filter((a) => !a.skipped && !!a.error).length;
     const skipped = assertions.filter((a) => a.skipped).length;
+    const requiredAssertions = [
+      'HTTP status',
+      'Response schema',
+      'Response envelope',
+      ...(scenario.error ? ['Expected error code'] : []),
+      ...(scenario.checks ? ['Business rule'] : []),
+    ];
     return {
       name: scenario.name,
       executed: matches.length > 0,
@@ -53,7 +60,9 @@ export function sanitizeReport(
         matches.length === 1 &&
         !entry?.requestError &&
         entry?.response?.code === scenario.status &&
-        passed >= 3 &&
+        requiredAssertions.every(
+          (name) => assertions.filter((a) => a.assertion === name).length === 1,
+        ) &&
         failed === 0 &&
         skipped === 0,
       assertionsPassed: passed,

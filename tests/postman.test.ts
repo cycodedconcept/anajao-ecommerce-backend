@@ -100,6 +100,12 @@ describe('Postman workflow contracts', () => {
     expect(sanitized.requests[1]!.executed).toBe(false);
     expect(sanitized.unexpectedFailure).toBe(true);
     expect(JSON.stringify(sanitized)).not.toContain('DO-NOT-PUBLISH');
+    const requiresBusinessRule = [{ ...expected[0]!, checks: ['required'] }];
+    expect(sanitizeReport(raw, requiresBusinessRule).requests[0]!.passed).toBe(
+      false,
+    );
+    raw.run.executions[0]!.assertions[0] = { assertion: 'Unrelated assertion' };
+    expect(sanitizeReport(raw, expected).requests[0]!.passed).toBe(false);
     raw.run.executions[0]!.assertions = [
       { assertion: 'HTTP status', error: { message: 'DO-NOT-PUBLISH' } } as {
         assertion: string;

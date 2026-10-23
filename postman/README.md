@@ -37,6 +37,8 @@ The child CLI receives only PATH, its temporary directory and a CI marker; datab
 
 ## Reports and CI
 
+The runner explicitly selects the official CLI’s Newman-compatible JSON structure and omits bodies/headers before projecting results. Folder selection uses the CLI’s `-i` option; see the [official command reference](https://learning.postman.com/docs/postman-cli/postman-cli-collections/) and [reporter options](https://learning.postman.com/docs/postman-cli/postman-cli-reporters).
+
 The runner projects raw results into an allowlist of scenario names, status codes, assertion counts, execution flags and fixed side-effect check names. It never exports request/response bodies, headers, emails, tokens, passwords, raw errors or the full environment. Reports are written to ignored `reports/api-tests/latest.json` and `latest.md`. Commit sanitized, dated report snapshots as milestone evidence. Unexecuted requests are reported separately from executed failures; skipped assertions prevent acceptance.
 
 GitHub Actions runs the collection after test-schema migration, integration tests and smoke checks on Linux. A failed collection run fails the verify job. The `api-test-reports` artifact contains only sanitized latest reports and expires after 14 days. A workflow definition or upload alone is not evidence of a pass; inspect the actual run and report. Do not upload private temporary files or raw Postman JSON reports.
