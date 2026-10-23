@@ -180,7 +180,7 @@ try {
       'collection',
       'run',
       resolve('postman/anajao-ecommerce.postman_collection.json'),
-      '--folder',
+      '-i',
       `automated-${domain}`,
       '-e',
       environment,
