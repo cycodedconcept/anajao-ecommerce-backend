@@ -68,7 +68,13 @@ async function run(
   env: NodeJS.ProcessEnv,
 ): Promise<number> {
   return new Promise((resolve, reject) => {
-    child = spawn(binary, args, { env, stdio: 'ignore' });
+    child = spawn(binary, args, { env, stdio: ['ignore', 'pipe', 'pipe'] });
+    let diagnostics = '';
+    const capture = (chunk: Buffer) => {
+      if (diagnostics.length < 16384) diagnostics += chunk.toString();
+    };
+    child.stdout?.on('data', capture);
+    child.stderr?.on('data', capture);
     const timeout = setTimeout(() => child?.kill('SIGKILL'), 120_000);
     child.once('error', () => {
       clearTimeout(timeout);
@@ -76,6 +82,25 @@ async function run(
     });
     child.once('exit', (code) => {
       clearTimeout(timeout);
+      if (code !== 0) {
+        const categories = [
+          'unknown option',
+          'ENOENT',
+          'EACCES',
+          'login',
+          'API key',
+          'folder',
+          'environment',
+          'HOME',
+          'reporter',
+          'unsupported',
+        ].filter((word) =>
+          diagnostics.toLowerCase().includes(word.toLowerCase()),
+        );
+        console.log(
+          `CLI exit ${code ?? 'signal'}; diagnostic categories: ${categories.join(', ') || 'unclassified'}`,
+        );
+      }
       resolve(code ?? 1);
     });
   });
@@ -173,9 +198,11 @@ try {
       '--no-report-events',
     ];
     const code = await run(binary, args, childEnv);
+    stage = `report read ${domain}`;
+    const rawReport = JSON.parse(await readFile(raw, 'utf8')) as unknown;
     stage = `report validation ${domain}`;
     const sanitized = sanitizeReport(
-      JSON.parse(await readFile(raw, 'utf8')),
+      rawReport,
       cases.filter((c) => c.domain === domain),
     );
     report.requests.push(...sanitized.requests);
